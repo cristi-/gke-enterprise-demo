@@ -14,23 +14,34 @@
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+git_repository(
+    name = "bazel_skylib",
+    remote = "https://github.com/bazelbuild/bazel-skylib.git",
+    tag = "0.6.0",
+)
+
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "35c585261362a96b1fe777a7c4c41252b22fd404f24483e1c48b15d7eb2b55a5",
-    strip_prefix = "rules_docker-4282829a554058401f7ff63004c8870c8d35e29c",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/4282829a554058401f7ff63004c8870c8d35e29c.tar.gz"],
+    sha256 = "aed1c249d4ec8f703edddf35cbe9dfaca0b5f5ea6e4cd9e83e99f3b0d1136c3d",
+    strip_prefix = "rules_docker-0.7.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.7.0.tar.gz"],
 )
 
 load(
-    "@io_bazel_rules_docker//docker:docker.bzl",
-    "docker_repositories",
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
 )
 
-docker_repositories()
+container_repositories()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
 
 git_repository(
     name = "io_bazel_rules_k8s",
-    commit = "62ae7911ef60f91ed32fdd48a6b837287a626a80",
+    commit = "d72491924369868a13532af9f15cb766e5943855",
     remote = "https://github.com/bazelbuild/rules_k8s.git",
 )
 
@@ -62,8 +73,8 @@ k8s_defaults(
 # Standard bazel golang support
 http_archive(
     name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.15.5/rules_go-0.15.5.tar.gz",
-    sha256 = "8f6ec7856863aac58a12c921215c8e9ab1c03cb0c570397fed4a79ade7c0bb4a",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.16.5/rules_go-0.16.5.tar.gz",
+    sha256 = "7be7dc01f1e0afdba6c8eb2b43d2fa01c743be1b9273ab1eaf6c233df078d705",
 )
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
 go_rules_dependencies()
@@ -72,28 +83,13 @@ go_register_toolchains()
 # gazelle rules
 http_archive(
     name = "bazel_gazelle",
-    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.14.0/bazel-gazelle-0.14.0.tar.gz",
-    sha256 = "c0a5739d12c6d05b6c1ad56f2200cb0b57c5a70e03ebd2f7b87ce88cabf09c7b",
+    url = "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.16.0/bazel-gazelle-0.16.0.tar.gz",
+    sha256 = "7949fc6cc17b5b191103e97481cf8889217263acf52e00b560683413af204fcb",
 )
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
 gazelle_dependencies()
 
-# bazel rules for docker
-http_archive(
-    name = "io_bazel_rules_docker",
-    sha256 = "29d109605e0d6f9c892584f07275b8c9260803bf0c6fcb7de2623b2bedc910bd",
-    strip_prefix = "rules_docker-0.5.1",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.5.1.tar.gz"],
-)
-
-load(
-    "@io_bazel_rules_docker//container:container.bzl",
-    "container_pull",
-    container_repositories = "repositories",
-)
-
-container_repositories()
 
 # bazel go image rules
 load(
